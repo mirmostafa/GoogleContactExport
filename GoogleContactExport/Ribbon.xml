@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="Ribbon_Load">
+  <backstage onShow="Backstage_OnShow">
+    <tab idMso="TabRecent">
+      <firstColumn>
+        <taskGroup idMso="GroupOpenOutlook">
+          <category idMso="OpenCategory">
+            <task id="OpenGCE" label="Open GCE" onAction="open_GCE" description="Import contacts from Google account." imageMso="DirectRepliesTo" isDefinitive="true"/>
+          </category>
+        </taskGroup>
+      </firstColumn>
+    </tab>
+  </backstage>
+</customUI>
