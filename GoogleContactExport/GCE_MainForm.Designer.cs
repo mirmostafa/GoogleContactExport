@@ -80,9 +80,8 @@
             this.lblStatus.AutoSize = true;
             this.lblStatus.Location = new System.Drawing.Point(12, 71);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(196, 13);
+            this.lblStatus.Size = new System.Drawing.Size(0, 13);
             this.lblStatus.TabIndex = 5;
-            this.lblStatus.Text = "You should not be able to see this text...";
             // 
             // GCE_MainForm
             // 

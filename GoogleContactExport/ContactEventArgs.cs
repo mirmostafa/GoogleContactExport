@@ -1,4 +1,6 @@
-﻿namespace GoogleContactExport
+﻿using System;
+
+namespace GoogleContactExport
 {
     public class ContactEventArgs
     {
@@ -35,12 +37,9 @@
 
         //Other
         public string notes { get; set; }
-        public string birthday { get; set; }
+        public DateTime birthday { get; set; }
         public string gender { get; set; }
         public string company { get; set; }
         public string jobTitle { get; set; }
-
-
-
     }
 }

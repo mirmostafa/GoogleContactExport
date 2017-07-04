@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 
 namespace GoogleContactExport
@@ -25,7 +26,6 @@ namespace GoogleContactExport
             if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Google.Apis.Auth", "Google.Apis.Auth.OAuth2.Responses.TokenResponse-me")))
             {
                 btnRemoveAuth.Enabled = true;
-                btnGetContacts.Enabled = true;
                 btnAuth.Enabled = false;
 
                 btnAuth_Click(this, e);
@@ -45,7 +45,7 @@ namespace GoogleContactExport
                     ClientId = "425537419269-36uofj9uv00ru9qp9653l3u8o2vjvqhn.apps.googleusercontent.com",
                     ClientSecret = "9ur93YzU8rLlAETexFE4KvuW"
                 },
-                new[] { "profile", "https://www.googleapis.com/auth/contacts.readonly" },
+                new[] { "email", "profile", "https://www.googleapis.com/auth/contacts.readonly" },
                 "me",
                 CancellationToken.None).Result;
 
@@ -56,15 +56,16 @@ namespace GoogleContactExport
                 ApplicationName = "GoogleContactExport",
             });
 
-            lblStatus.Text = "Authenticated as: ";
+            lblStatus.Text = "Authenticated!";
 
             btnGetContacts.Enabled = true;
             btnRemoveAuth.Enabled = true;
             btnAuth.Enabled = false;
-
-            PeopleResource.GetRequest peopleRequest = peopleService.People.Get("people/me");
-            peopleRequest.RequestMaskIncludeField = "person.emailAddresses";
-            lblStatus.Text = "Authenticated as: " + peopleRequest.Execute();
+            
+            //PeopleResource.GetRequest peopleRequest = peopleService.People.Get("people/me");
+            //peopleRequest.RequestMaskIncludeField = "person.emailAddresses";
+            //Person profile = peopleRequest.Execute();
+            //lblStatus.Text = "Authenticated as: " + profile.EmailAddresses[0].Value;
         }
 
         private void btnGetContacts_Click(object sender, EventArgs e)
@@ -117,20 +118,22 @@ namespace GoogleContactExport
                 {
                     foreach (var numb in person.PhoneNumbers)
                     {
-                        if (numb.Type == "work" && args.businessPhone == string.Empty)
+                        if (numb.Type == "work" && string.IsNullOrEmpty(args.businessPhone))
                             args.businessPhone = numb.Value;
-                        else if (numb.Type == "work" && args.businessPhone != string.Empty)
+                        else if (numb.Type == "work" && !string.IsNullOrEmpty(args.businessPhone))
                             args.business2Phone = numb.Value;
-                        else if (numb.Type == "home")
+                        else if (numb.Type == "home" && string.IsNullOrEmpty(args.privatePhone))
                             args.privatePhone = numb.Value;
-                        else if (numb.Type == "mobile")
+                        else if (numb.Type == "mobile" && string.IsNullOrEmpty(args.mobilePhone))
                             args.mobilePhone = numb.Value;
-                        else if (numb.Type == "homeFax")
+                        else if (numb.Type == "homeFax" && string.IsNullOrEmpty(args.privateFax))
                             args.privateFax = numb.Value;
-                        else if (numb.Type == "workFax")
+                        else if (numb.Type == "workFax" && string.IsNullOrEmpty(args.businessFax))
                             args.businessFax = numb.Value;
-                        else if (numb.Type == "pager")
+                        else if (numb.Type == "pager" && string.IsNullOrEmpty(args.pager))
                             args.pager = numb.Value;
+                        else
+                            args.notes += "Other Phone Numbers: " + numb.Type + ": " + numb.Value + Environment.NewLine;
                     }
                 }
 
@@ -140,40 +143,37 @@ namespace GoogleContactExport
                     {
                         if (mail.Type == "home")
                             args.privateEmail = mail.Value;
-                        else if (mail.Type == "work" && args.businessEmail == string.Empty)
+                        else if (mail.Type == "work" && string.IsNullOrEmpty(args.businessEmail))
                             args.businessEmail = mail.Value;
-                        else if (mail.Type == "work" && args.businessEmail != string.Empty)
+                        else if (mail.Type == "work" && !string.IsNullOrEmpty(args.businessEmail) && string.IsNullOrEmpty(args.business2Email))
                             args.business2Email = mail.Value;
-                        else if (mail.Type == "other" && args.businessEmail == string.Empty)
+                        else if (mail.Type == "other" && string.IsNullOrEmpty(args.businessEmail))
                             args.businessEmail = mail.Value;
-                        else if (mail.Type == "other" && args.business2Email == string.Empty)
+                        else if (mail.Type == "other" && string.IsNullOrEmpty(args.business2Email))
                             args.business2Email = mail.Value;
-                        else if (mail.Type == "other" && args.privateEmail == string.Empty)
+                        else if (mail.Type == "other" && string.IsNullOrEmpty(args.privateEmail))
                             args.privateEmail = mail.Value;
                         else
-                            args.notes = "Other E-Mail Addresses: " + mail.Value;
+                            args.notes += "Other E-Mail Addresses: " + mail.Type + ": " + mail.Value + Environment.NewLine;
                     }
                 }
 
                 if (person.Biographies != null)
                 {
-                    if (args.notes != string.Empty)
-                        args.notes = args.notes + Environment.NewLine + Environment.NewLine + person.Biographies[0].Value;
+                    if (!string.IsNullOrEmpty(args.notes))
+                        args.notes += Environment.NewLine + person.Biographies[0].Value;
                     else
                         args.notes = person.Biographies[0].Value;
                 }
 
                 if (person.Birthdays != null)
-                        args.birthday = person.Birthdays[0].Text;
+                {
+                    args.birthday = new DateTime(person.Birthdays[0].Date.Year.Value, person.Birthdays[0].Date.Month.Value, person.Birthdays[0].Date.Day.Value);
+                }
 
                 if (person.Genders != null)
                 {
-                    if (person.Genders[0].Value == "male")
-                        args.gender = "Männlich";
-                    else if (person.Genders[0].Value == "female")
-                        args.gender = "Weiblich";
-                    else
-                        args.gender = "Sonstige";
+                    args.gender = person.Genders[0].Value;
                 }
 
                 if (person.Organizations != null)

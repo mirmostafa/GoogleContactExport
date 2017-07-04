@@ -68,10 +68,16 @@ namespace GoogleContactExport
                 newContact.Email3Address = e.business2Email;
 
                 newContact.Body = e.notes;
-                //newContact.Birthday = e.birthday;
-                //newContact.Gender = e.gender;
+                newContact.Birthday = e.birthday;
                 newContact.Companies = e.company;
                 newContact.JobTitle = e.jobTitle;
+
+                if (e.gender == "male")
+                    newContact.Gender = Outlook.OlGender.olMale;
+                else if (e.gender == "female")
+                    newContact.Gender = Outlook.OlGender.olFemale;
+                else
+                    newContact.Gender = Outlook.OlGender.olUnspecified;
 
                 newContact.Save();
             }
