@@ -1,6 +1,10 @@
 # GoogleContactExport
 "GoogleContactExport" lets you export your Google contacts into Outlook using the Google People API v1. You just need to authorize yourself using your Google account and then copy all your Google Contacts with one single click!
 
+![](http://i.imgur.com/G6u1t59.jpg)
+
+__You can find the Add-In on the backstage view tab "Open and Export"!__
+
 ## Getting Started
 These instructions will get you a copy of the project up and running on your own computer.
 
@@ -13,7 +17,7 @@ To use my Add-In you only need:
 Please note that while other Versions of Outlook might work aswell they haven't been tested. Please report back if the Add-In works with your version of Outlook!
 
 ### Installing
-Installing is very easy, just run the installer. It will automatically extract the needed files to a temporary folder and start the VSTO installer which then adds the Add-In and all needed resources to Outlook!
+Installing is very easy, just run the installer. It will automatically extract the needed files to a temporary folder and start the VSTO installer which then adds the Add-In and all needed resources to Outlook! You can then start the Add-In through the button it adds on the "Open and Export" tab in the backstage view.
 
 ## Built With
 
